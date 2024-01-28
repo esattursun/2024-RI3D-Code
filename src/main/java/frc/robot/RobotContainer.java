@@ -6,7 +6,7 @@ package frc.robot;
 
 
 import edu.wpi.first.wpilibj2.command.Command;
-
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -15,12 +15,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.Constants.DriveConstans;
 import frc.robot.Constants.JoystickConstants;
-
-
+import frc.robot.commands.AutoArm;
 import frc.robot.commands.DriveJoystickCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.AutoArm.armPosition;
 import frc.robot.commands.Autonomous.AutoCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -30,6 +31,7 @@ public class RobotContainer {
  private final static ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
  private final static IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
  private final static DriveSubsystem driveSubsystem = new DriveSubsystem();
+ private final static ArmSubsystem armSubsystem = new ArmSubsystem();
 
  public final ShuffleboardTab Auto_Event_Map = Shuffleboard.getTab("Auto");
  //Joysticks
@@ -72,7 +74,22 @@ public class RobotContainer {
      0.5
      ));
      
+     //climbing button
+    new JoystickButton(m_gamepad, 0).toggleOnTrue(new SequentialCommandGroup(
+      new AutoArm(armSubsystem, 1, armPosition.closedd),
+     new ShootCommand(shooterSubsystem,intakeSubsystem,3,1 )
+    ));
 
+    //amplifier buton
+    new JoystickButton(m_gamepad, 5).toggleOnTrue(new SequentialCommandGroup(
+      new AutoArm(armSubsystem, 1, armPosition.amplifierr),
+      new ShootCommand(shooterSubsystem, intakeSubsystem, 3, 1)
+    ));
+    //speaker buton
+    new JoystickButton(m_gamepad, 5).toggleOnTrue(new SequentialCommandGroup(
+      new AutoArm(armSubsystem, 2, armPosition.speakerr),
+      new ShootCommand(shooterSubsystem, intakeSubsystem, 3, 1)
+    ));
      
 
   }
