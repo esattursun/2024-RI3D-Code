@@ -14,19 +14,20 @@ public class AutoArm extends Command {
     private final ArmSubsystem armSubsystem;
   private final PIDController pidController;  
   private final armPosition armPosition;
+ 
 
   public static enum armPosition{
     closedd,
+    closeshoot,
     amplifierr,
     speakerr
   }
 
   /** Creates a new AutoIntake. */
-  public AutoArm(ArmSubsystem armSubsystem, double setPoint, armPosition armPositiond) {
+  public AutoArm(ArmSubsystem armSubsystem,armPosition armPositiond) {
     this.armSubsystem = armSubsystem;
     this.armPosition = armPositiond;
     this.pidController = new PIDController(1.2, .3, .1);
-    pidController.setSetpoint(setPoint);
     addRequirements(armSubsystem);
   }
 
@@ -36,11 +37,26 @@ public class AutoArm extends Command {
     pidController.reset();
     System.out.println("IntakePIDCmd started!");
 
+    switch(armPosition){
+      case closedd:
+        pidController.setSetpoint(8.76);
+      case closeshoot:
+        pidController.setSetpoint(7.95);
+      case amplifierr:
+        pidController.setSetpoint(4.875);
+      case speakerr:
+        pidController.setSetpoint(2);
+      default:
+        break;
+      
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    
     double speed = pidController.calculate(armSubsystem.GetEncodervalue());
     armSubsystem.move_arm(-speed * .5);
     
@@ -56,18 +72,18 @@ public class AutoArm extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(armPosition == armPosition.amplifierr){
-      return this.armSubsystem.amplifier();
 
-    }else if(armPosition == armPosition.closedd){
-      return this.armSubsystem.isAtClose();
-
-    }else if(armPosition == armPosition.speakerr){
-      return this.armSubsystem.speaker();
-    
-    
-    }else{
-      return false;
-    }
+    switch (armPosition) {
+      case closedd:
+          return this.armSubsystem.isAtClose();
+      case closeshoot:
+          return this.armSubsystem.isAtCloseShoot();
+      case amplifierr:
+          return this.armSubsystem.amplifier();
+      case speakerr:
+          return this.armSubsystem.speaker();
+      default:
+          return false;
+  }
   }
 }

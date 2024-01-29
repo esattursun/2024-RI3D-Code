@@ -9,56 +9,59 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
-import frc.robot.Constants.DriveConstans;
 import frc.robot.Constants.JoystickConstants;
 import frc.robot.commands.AutoArm;
-import frc.robot.commands.DriveJoystickCommand;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.autonomous.AutoCommand;
+import frc.robot.commands.autonomous.FRCPathPlanner;
 import frc.robot.commands.AutoArm.armPosition;
-import frc.robot.commands.Autonomous.AutoCommand;
+import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.poseestimation.PoseEstimation;
 import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class RobotContainer {
  //subsystems 
+ public static final PoseEstimation poseEstimation = new PoseEstimation();
+ public static final Drivetrain drivetrain = new Drivetrain();
+
+   public static Field2d field = new Field2d();
+  public static Field2d nodeSelector = new Field2d();
+
+ 
+   
+
  private final static ShooterSubsystem shooterSubsystem = new ShooterSubsystem();
  private final static IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
- private final static DriveSubsystem driveSubsystem = new DriveSubsystem();
  private final static ArmSubsystem armSubsystem = new ArmSubsystem();
 
  public final ShuffleboardTab Auto_Event_Map = Shuffleboard.getTab("Auto");
  //Joysticks
  private final Joystick m_gamepad = new Joystick (JoystickConstants.m_gamepadPort);
+   private DriveWithJoysticks driveCommand = new DriveWithJoysticks(drivetrain, poseEstimation, m_gamepad);
 
   public RobotContainer() {
 
-   driveSubsystem.setDefaultCommand(new DriveJoystickCommand(
-    driveSubsystem,
-    ()-> -m_gamepad.getRawAxis(DriveConstans.xAxis)*0.5,
-    ()-> m_gamepad.getRawAxis(DriveConstans.yAxis)*0.5
-   ));
-    
+    FRCPathPlanner.setSmartDashboard();
+    FRCPathPlanner.CommandNameEntry();
+    FRCPathPlanner.addAutoOptions();
+    FRCPathPlanner.addPathOptions();
+    FRCPathPlanner.FindPath();
+
+    drivetrain.setDefaultCommand(driveCommand);
     configureButtonBindings();
   }
 
   
   
   private void configureButtonBindings() {
-/*//                     Shooter manual
- * // Shooter up
- * new JoystickButton(m_gamepad, 9).whileTrue(new ShooterManualCommand(shooterSubsystem, 1, 0));//shoot
- * new JoystickButton(m_gamepad,8).whileTrue(new ShooterManualCommand(shooterSubsystem, -1,0));//intake
- * // Shooter Down
- * new JoystickButton(m_gamepad,7).whileTrue(new ShooterManualCommand(shooterSubsystem, 0,1));//shoot
- * new JoystickButton(m_gamepad,6).whileTrue(new ShooterManualCommand(shooterSubsystem, 0,-1));//intake
-*/
+
   
   
   //! Shooter autonomous
@@ -76,18 +79,18 @@ public class RobotContainer {
      
      //climbing button
     new JoystickButton(m_gamepad, 0).toggleOnTrue(new SequentialCommandGroup(
-      new AutoArm(armSubsystem, 1, armPosition.closedd),
+      new AutoArm(armSubsystem, armPosition.closedd),
      new ShootCommand(shooterSubsystem,intakeSubsystem,3,1 )
     ));
 
     //amplifier buton
     new JoystickButton(m_gamepad, 5).toggleOnTrue(new SequentialCommandGroup(
-      new AutoArm(armSubsystem, 1, armPosition.amplifierr),
+      new AutoArm(armSubsystem,armPosition.amplifierr),
       new ShootCommand(shooterSubsystem, intakeSubsystem, 3, 1)
     ));
     //speaker buton
     new JoystickButton(m_gamepad, 5).toggleOnTrue(new SequentialCommandGroup(
-      new AutoArm(armSubsystem, 2, armPosition.speakerr),
+      new AutoArm(armSubsystem,  armPosition.speakerr),
       new ShootCommand(shooterSubsystem, intakeSubsystem, 3, 1)
     ));
      
@@ -98,7 +101,7 @@ public class RobotContainer {
 
 
   public Command getAutonomousCommand() {
-    //return new AutoSICommand(shooterSubsystem, 2, 1, 1.1);
+    
  
  
     return new AutoCommand();
@@ -120,7 +123,14 @@ public class RobotContainer {
   public static ShooterSubsystem getShooterSubsystem(){
     return shooterSubsystem;
   }
-  public static DriveSubsystem getDriveSubsystem(){
-     return driveSubsystem;
+  public static IntakeSubsystem getIntakeSubsystem(){
+     return intakeSubsystem;
+  }
+  public static PoseEstimation poseEstimation(){
+    return poseEstimation;
+  }
+  
+  public static Drivetrain getSwerveSubsystem() {
+    return drivetrain;
   }
 }

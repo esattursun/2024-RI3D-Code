@@ -14,17 +14,18 @@ public class ArmSubsystem extends SubsystemBase {
   private final PWMVictorSPX arml;
   private final PWMVictorSPX armr;
   public ArmSubsystem() {
-    arml = new PWMVictorSPX(0);
-    armr = new PWMVictorSPX(0);
+    arml = new PWMVictorSPX(8);
+    armr = new PWMVictorSPX(7);
   }
 
-  public void arm_to_pos(double pos){
+  /*public void arm_to_pos(double pos){
 
       double Kp = -15.0;
       double error = encoder.getDistance();
       double power = Kp * error;
      move_arm(power);
   }
+  */
 public double GetEncodervalue(){
   double  encodervalue =encoder.getDistance();
   return encodervalue;
@@ -47,14 +48,21 @@ public double GetEncodervalue(){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    GetEncodervalue();
   }
+  
    public boolean isAtClose(){
-    double error = GetEncodervalue() - 0;
+    double error = GetEncodervalue() - 8.76;
+    return (Math.abs(error) < 0.05);
+  }
+
+  public boolean isAtCloseShoot(){
+    double error = GetEncodervalue() - 7.95;
     return (Math.abs(error) < 0.05);
   }
 
   public boolean amplifier(){
-    double error = GetEncodervalue() -1;
+    double error = GetEncodervalue() - 4.875;
     return (Math.abs(error) < 0.05);
   }
 

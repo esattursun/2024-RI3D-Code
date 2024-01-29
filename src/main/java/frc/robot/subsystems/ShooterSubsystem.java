@@ -15,8 +15,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   
   public ShooterSubsystem() {
-    RightShooterMotor = new PWMVictorSPX(ShooterConstans.ShooterUpPwmId);
-    LeftShooterMotor = new PWMVictorSPX(ShooterConstans.ShooterDownPwmId);
+    RightShooterMotor = new PWMVictorSPX(6);
+    LeftShooterMotor = new PWMVictorSPX(5);
   }
  
   //! This function  set the power of the upper shooter motor

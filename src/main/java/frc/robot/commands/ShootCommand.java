@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstans;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utils.TimerUtils;
 
 
 public class ShootCommand extends Command {
@@ -14,6 +15,7 @@ public class ShootCommand extends Command {
   private final IntakeSubsystem intakeSubsystem;
  
   private double StartTime;
+  private double PassingTime;
   private double ChargeTime;
   private double WorkingTimeAfterChargeTime;
 
@@ -39,24 +41,22 @@ public class ShootCommand extends Command {
  
   @Override
   public void execute() {
-  
-  if (PassingTime() <= ChargeTime) {
+ double PassingTime = TimerUtils.PassingTimeCalculator(StartTime);
+
+  if (PassingTime <= ChargeTime) {
     //! Until the passing time equals the Charging time.
       shooterSubsystem.setMotors(ShooterConstans.OtoShootChargePower);
 
-  } else if (PassingTime() >= ChargeTime && PassingTime() <= ChargeTime+WorkingTimeAfterChargeTime) {
+  } else if (PassingTime >= ChargeTime && PassingTime <= ChargeTime+WorkingTimeAfterChargeTime) {
     //! From the end of the charging time to the shots end time.
       intakeSubsystem.SetIntakeMotor(-1);
       shooterSubsystem.setMotors(1);
    } 
 
-PassingTime();
+
  }
 
-  public double PassingTime(){
-  double PassingTime=shooterSubsystem.RealTime()-StartTime;
-  return PassingTime;
- }
+
   
 
   @Override
@@ -67,7 +67,7 @@ PassingTime();
 
   @Override
   public boolean isFinished() {
-    if(PassingTime()>=  ChargeTime+WorkingTimeAfterChargeTime+0.1){
+    if(PassingTime >=  ChargeTime+WorkingTimeAfterChargeTime+0.1){
       return true;
     }else{
       return false;

@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -14,17 +13,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
 
   public IntakeSubsystem() {
-    IntakeMotor = new PWMVictorSPX(0);
+    IntakeMotor = new PWMVictorSPX(9);
 
 
   }
 public void SetIntakeMotor(double Intakespeed){
   IntakeMotor.set(Intakespeed);
 }
-public double RealTime(){
-  double x= Timer.getFPGATimestamp();
-  return x;
-  }
+
   public void stopMotor(){
     IntakeMotor.set(0);
   }

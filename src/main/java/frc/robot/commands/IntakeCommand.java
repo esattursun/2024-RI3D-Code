@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.ShooterConstans;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.utils.TimerUtils;
 
 
 
@@ -14,6 +15,8 @@ public class IntakeCommand extends Command {
  
   private double StartTime;
   private double KeepTime;
+  private double PassingTime;
+  
 
 
   public IntakeCommand(IntakeSubsystem IntakeSubsystem,double KeepTime) {
@@ -34,19 +37,18 @@ public class IntakeCommand extends Command {
   
   @Override
   public void execute() {
-    
-    if (PassingTime() <= KeepTime){
+    double PassingTime = TimerUtils.PassingTimeCalculator(StartTime);
+
+    if (PassingTime <= KeepTime){
       //! Until the passing time equals the keep time.
         IntakeSubsystem.SetIntakeMotor(ShooterConstans.OtoIntakeUpPower);
       
     }
 
-    PassingTime();
+   
   }
-  public double PassingTime(){
-    double PassingTime=IntakeSubsystem.RealTime()-StartTime;
-    return PassingTime;
-    }
+  
+
   @Override
   public void end(boolean interrupted) {
    IntakeSubsystem.stopMotor();
@@ -56,7 +58,7 @@ public class IntakeCommand extends Command {
   
   @Override
   public boolean isFinished() {
-    if(PassingTime() > KeepTime+0.1){
+    if(PassingTime > KeepTime+0.1){
       return true;
     }else{
       return false;
