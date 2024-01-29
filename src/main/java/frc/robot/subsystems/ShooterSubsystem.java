@@ -33,12 +33,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
 @Override
 public void periodic() {
-  RealTime();
+  
   SmartDashboard.putNumber("Time", Timer.getFPGATimestamp());
 
 }
-public double RealTime(){
-  double x= Timer.getFPGATimestamp();
-  return x;
-  }
+
 }
